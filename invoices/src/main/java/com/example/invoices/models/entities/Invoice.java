@@ -10,73 +10,70 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@Table(name = "invoices")
 public class Invoice {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Long invoiceId;
 
-    @Column(nullable = false)
+    @Id
+    @Column(name = "invoice_id", length = 50, nullable = false)
+    private String invoiceId;
+
+    @Column(name = "invoice_date", nullable = false)
     private LocalDateTime invoiceDate;
 
-    @Column(nullable = false)
+    @Column(name = "invoice_due_date", nullable = false)
     private LocalDateTime invoiceDueDate;
 
-    @Column(nullable = false)
-    private int invoiceCost;
+    @Column(name = "invoice_cost", precision = 15, scale = 2, nullable = false)
+    private Long invoiceCost;
 
-    @Column(nullable = false)
+    @Column(name = "invoice_currency", length = 5, nullable = false)
     private String invoiceCurrency;
 
-    @Column(length = 1000)
+    @Column(name = "invoice_status", length = 50, nullable = false)
     private String invoiceStatus;
 
-    @Column(length = 1000)
-    private String supplier_internal_id;
+    @Column(name = "supplier_internal_id", length = 50, nullable = false)
+    private String supplierInternalId;
 
-    @Column(length = 1000)
-    private String supplier_external_id;
+    @Column(name = "supplier_external_id", length = 50)
+    private String supplierExternalId;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_company_name", length = 200, nullable = false)
+    private String supplierCompanyName;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_address", length = 500)
+    private String supplierAddress;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_city", length = 100)
+    private String supplierCity;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_country", length = 5)
+    private String supplierCountry;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_contact_name", length = 150)
+    private String supplierContactName;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_phone", length = 20)
+    private String supplierPhone;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_email", length = 150)
+    private String supplierEmail;
 
-    @Column(length = 1000)
-    private String bio;
+    @Column(name = "supplier_bank_code", length = 50)
+    private String supplierBankCode;
 
-    @Column
-    private String distance;
-//    invoice_status VARCHAR(20) NOT NULL,
-//    supplier_internal_id VARCHAR(20) NOT NULL,
-//    supplier_external_id VARCHAR(20),
-//    supplier_company_name VARCHAR(100) NOT NULL,
-//    supplier_address VARCHAR(255),
-//    supplier_city VARCHAR(100),
-//    supplier_country VARCHAR(2),
-//    supplier_contact_name VARCHAR(100),
-//    supplier_phone VARCHAR(20),
-//    supplier_email VARCHAR(100),
-//    supplier_bank_code VARCHAR(20),
-//    supplier_bank_branch_code VARCHAR(20),
-//    supplier_bank_account_number VARCHAR(20),
-//    supplier_status VARCHAR(20),
-//    supplier_stock_value NUMERIC(10, 2),
-//    supplier_withholding_tax NUMERIC(5, 2)
+    @Column(name = "supplier_bank_branch_code", length = 50)
+    private String supplierBankBranchCode;
+
+    @Column(name = "supplier_bank_account_number", length = 50)
+    private String supplierBankAccountNumber;
+
+    @Column(name = "supplier_status", length = 50)
+    private String supplierStatus;
+
+    @Column(name = "supplier_stock_value", precision = 20, scale = 2)
+    private Long supplierStockValue;
+
+    @Column(name = "supplier_withholding_tax", precision = 10, scale = 2)
+    private Long supplierWithholdingTax;
 }

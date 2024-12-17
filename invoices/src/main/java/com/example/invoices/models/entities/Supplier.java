@@ -28,18 +28,36 @@ public class Supplier {
     @Column(nullable = false)
     private String companyName;
 
+    @Column
     private String address;
+
+    @Column
     private String city;
+
+    @Column
     private String country;
+
+    @Column
     private String contactName;
+
+    @Column
     private String phone;
+
+    @Column
     private String email;
+
+    @Column
     private String bankCode;
+
+    @Column
     private String bankBranchCode;
+
+    @Column
     private String bankAccountNumber;
 
-    @Column(nullable = false)
-    private String status;
+    @Column
+    private String supplierStatus;
 
+    @Column
     private BigDecimal stockValue;
 }

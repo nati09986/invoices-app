@@ -32,7 +32,7 @@ public class CSVController {
             List<String> lines = reader.lines().skip(1).collect(Collectors.toList());
 
             for (String line : lines) {
-                String[] values = line.split("\t");
+                String[] values = line.split(",");
                 Supplier supplier = supplierRepository.findBySupplierId(values[6]);
                 if (supplier == null) {
                     supplier = new Supplier();
@@ -55,7 +55,7 @@ public class CSVController {
             return "File uploaded successfully!";
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error uploading file!";
+            return "Error uploading file: " + e.getMessage();
         }
     }
 }

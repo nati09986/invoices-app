@@ -7,13 +7,14 @@ import com.example.invoices.repositories.SupplierRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/csv")
@@ -27,28 +28,34 @@ public class CSVController {
 
     @PostMapping("/upload")
     public String uploadCSV(@RequestParam("file") MultipartFile file) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            List<String> lines = reader.lines().skip(1).collect(Collectors.toList());
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim().parse(reader);
 
-            for (String line : lines) {
-                String[] values = line.split(",");
-                Supplier supplier = supplierRepository.findBySupplierId(values[6]);
+            for (CSVRecord record : parser) {
+                String invoiceId = record.get("invoice_id");
+                LocalDateTime invoiceDate = LocalDateTime.parse(record.get("invoice_date"));
+                LocalDateTime invoiceDueDate = LocalDateTime.parse(record.get("invoice_due_date"));
+                BigDecimal invoiceCost = new BigDecimal(record.get("invoice_cost"));
+                String invoiceCurrency = record.get("invoice_currency");
+                String invoiceStatus = record.get("invoice_status");
+                String supplierId = record.get("supplier_internal_id");
+
+                Supplier supplier = supplierRepository.findBySupplierId(supplierId);
                 if (supplier == null) {
                     supplier = new Supplier();
-                    supplier.setSupplierId(values[6]);
-                    supplier.setExternalId(values[7]);
-                    supplier.setCompanyName(values[8]);
+                    supplier.setSupplierId(supplierId);
+                    supplier.setExternalId(record.get("supplier_external_id"));
+                    supplier.setCompanyName(record.get("supplier_company_name"));
                     supplierRepository.save(supplier);
                 }
 
                 Invoice invoice = new Invoice();
-                invoice.setInvoiceId(values[0]);
-                invoice.setInvoiceDate(LocalDate.parse(values[1]));
-                invoice.setInvoiceDueDate(LocalDate.parse(values[2]));
-                invoice.setInvoiceCost(new BigDecimal(values[3]));
-                invoice.setInvoiceCurrency(values[4]);
-                invoice.setInvoiceStatus(values[5]);
+                invoice.setInvoiceId(invoiceId);
+                invoice.setInvoiceDate(invoiceDate);
+                invoice.setInvoiceDueDate(invoiceDueDate);
+                invoice.setInvoiceCost(invoiceCost);
+                invoice.setInvoiceCurrency(invoiceCurrency);
+                invoice.setInvoiceStatus(invoiceStatus);
                 invoice.setSupplier(supplier);
                 invoiceRepository.save(invoice);
             }

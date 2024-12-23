@@ -1,37 +1,48 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchInvoices } from '../store/invoicesSlice';
-import InvoiceStatusChart from '../components/charts/InvoiceStatusChart';
-import OverdueTrendChart from '../components/charts/OverdueTrendChart';
-import MonthlyInvoiceChart from '../components/charts/MonthlyInvoiceChart';
-import CustomerAnalysisChart from '../components/charts/CustomerAnalysisChart';
-import DateRangePicker from '../components/filters/DateRangePicker';
-import StatusFilter from '../components/filters/StatusFilter';
-import CustomerFilter from '../components/filters/CustomerFilter';
+import React, { useEffect, useState } from 'react';
+import InvoiceStatusChart from '../components/Charts/InvoiceStatusChart';
+import MonthlyInvoiceChart from '../components/Charts/MonthlyInvoiceChart';
+import OverdueTrendChart from '../components/Charts/OverdueTrendChart';
+import CustomerAnalysisChart from '../components/Charts/CustomerAnalysisChart';
+import InvoiceFilter from '../components/Filters/InvoiceFilter';
+import { fetchInvoices } from '../services/api';
+import { InvoiceData } from '../types/invoiceTypes';
+import { FilterCriteria } from '../types/filterTypes';
 
 const Dashboard: React.FC = () => {
-  const dispatch = useDispatch();
+    const [filters, setFilters] = useState<FilterCriteria>({
+        startDate: '',
+        endDate: '',
+        status: '',
+        customer: '',
+    });
 
-  useEffect(() => {
-    dispatch(fetchInvoices());
-  }, [dispatch]);
+    const [invoicesData, setData] = useState<InvoiceData[]>([]);
 
-  return (
-    <div>
-      <h1>Invoice Dashboard</h1>
-      <div className="filters">
-        <DateRangePicker />
-        <StatusFilter />
-        <CustomerFilter />
-      </div>
-      <div className="charts">
-        <InvoiceStatusChart />
-        <OverdueTrendChart />
-        <MonthlyInvoiceChart />
-        <CustomerAnalysisChart />
-      </div>
-    </div>
-  );
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetchInvoices(filters);
+                setData(response);
+            } catch (error) {
+                console.error('Failed to fetch invoices:', error);
+            }
+        };
+
+        fetchData();
+    }, [filters]);
+
+    return (
+        <div>
+            <h1>Dashboard</h1>
+            <InvoiceFilter onFilterChange={setFilters} />
+            <div className="charts">
+                <InvoiceStatusChart data={invoicesData.statusData} />
+                <MonthlyInvoiceChart data={invoicesData.monthlyData} />
+                <OverdueTrendChart data={invoicesData.overdueData} />
+                <CustomerAnalysisChart data={invoicesData.customerData} />
+            </div>
+        </div>
+    );
 };
 
 export default Dashboard;

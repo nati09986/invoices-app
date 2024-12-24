@@ -5,25 +5,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "suppliers")
 public class Supplier {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, unique = true)
     private String supplierId;
 
-    @Column(nullable = false, unique = true)
-    private String externalId;
+    @Column(nullable = false)
+    private String supplierExternalId;
 
     @Column(nullable = false)
     private String companyName;

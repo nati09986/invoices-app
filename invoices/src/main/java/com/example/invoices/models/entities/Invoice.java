@@ -2,21 +2,20 @@ package com.example.invoices.models.entities;
 
 import lombok.*;
 
-import javax.persistence.*;
-import java.time.LocalDate;
+import jakarta.persistence.*;
+
+import java.sql.Timestamp;
+
 import java.math.BigDecimal;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "invoices")
 public class Invoice {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, unique = true)
     private String invoiceId;
 
@@ -36,6 +35,6 @@ public class Invoice {
     private String invoiceStatus;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_id", nullable = false)
+    @JoinColumn(name = "supplier_internal_id", nullable = false)
     private Supplier supplier;
 }

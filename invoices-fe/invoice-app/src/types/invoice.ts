@@ -9,10 +9,3 @@ export interface Invoice {
     invoiceStatus: string;
     supplier: Supplier;
 }
-
-export type InvoiceData = {
-    statusData: { name: string; value: number }[];
-    monthlyData: { month: string; total: number }[];
-    overdueData: { date: string; overdue: number }[];
-    customerData: { customer: string; total: number }[];
-};

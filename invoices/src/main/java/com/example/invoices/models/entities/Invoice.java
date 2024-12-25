@@ -3,10 +3,8 @@ package com.example.invoices.models.entities;
 import lombok.*;
 
 import jakarta.persistence.*;
-
-import java.sql.Timestamp;
-
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Getter
 @Setter

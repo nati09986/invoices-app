@@ -1,6 +1,6 @@
 package com.example.invoices.services;
 
-import com.example.invoices.models.entities.Invoice;
+import com.example.invoices.models.Invoice;
 import com.example.invoices.models.Supplier;
 import com.example.invoices.repositories.InvoiceRepository;
 import com.example.invoices.repositories.SupplierRepository;

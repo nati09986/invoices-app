@@ -1,7 +1,7 @@
 package com.example.invoices.services;
 
 import com.example.invoices.models.entities.Invoice;
-import com.example.invoices.models.entities.Supplier;
+import com.example.invoices.models.Supplier;
 import com.example.invoices.repositories.InvoiceRepository;
 import com.example.invoices.repositories.SupplierRepository;
 import org.apache.commons.csv.CSVFormat;
@@ -17,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

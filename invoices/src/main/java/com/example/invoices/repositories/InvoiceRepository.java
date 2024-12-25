@@ -1,6 +1,6 @@
 package com.example.invoices.repositories;
 
-import com.example.invoices.models.entities.Invoice;
+import com.example.invoices.models.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

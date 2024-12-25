@@ -1,6 +1,6 @@
 package com.example.invoices.controllers;
 
-import com.example.invoices.models.entities.Invoice;
+import com.example.invoices.models.Invoice;
 import com.example.invoices.services.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -11,7 +11,7 @@ class ApiService {
     async fetchInvoices(startDate?: string, endDate?: string, customer?: string, status?: string): Promise<Invoice[]> {
         try {
             const response = await axios.get<Invoice[]>(`${this.baseUrl}/invoices/filter`, {
-                params: { startDate: startDate, endDate: endDate, customer: null, status: status },
+                params: { startDate: startDate, endDate: endDate, customer: customer, status: status },
             });
             console.log(response)
             return response.data;

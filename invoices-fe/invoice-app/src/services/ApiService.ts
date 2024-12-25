@@ -13,7 +13,6 @@ class ApiService {
             const response = await axios.get<Invoice[]>(`${this.baseUrl}/invoices/filter`, {
                 params: { startDate: startDate, endDate: endDate, customer: customer, status: status },
             });
-            console.log(response)
             return response.data;
         } catch (error) {
             console.error('Failed to fetch invoices:', error);

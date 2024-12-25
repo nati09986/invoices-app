@@ -1,47 +1,87 @@
 import React, { useEffect, useState } from 'react';
-import InvoiceStatusChart from '../components/Charts/InvoiceStatusChart';
-import MonthlyInvoiceChart from '../components/Charts/MonthlyInvoiceChart';
-import OverdueTrendChart from '../components/Charts/OverdueTrendChart';
-import CustomerAnalysisChart from '../components/Charts/CustomerAnalysisChart';
-import InvoiceFilter from '../components/Filters/InvoiceFilter';
-import { fetchInvoices } from '../services/api';
-import { InvoiceData } from '../types/invoiceTypes';
-import { FilterCriteria } from '../types/filterTypes';
+import { CircularProgress, Typography, Box } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import ApiService from '../services/ApiService';
+
+interface InvoiceStatusSummary {
+    status: string;
+    totalAmount: number;
+}
+
+const apiService = new ApiService('http://localhost:8080/api');
 
 const Dashboard: React.FC = () => {
-    const [filters, setFilters] = useState<FilterCriteria>({
-        startDate: '',
-        endDate: '',
-        status: '',
-        customer: '',
-    });
+    const [data, setData] = useState<InvoiceStatusSummary[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const [invoicesData, setData] = useState<InvoiceData[]>([]);
+    const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const invoices = await apiService.fetchInvoices(
+                // '2024-09-01',
+                // '2024-09-19',
+                // 'LILI Avraham',
+                // 'CONFIRMED'
+            );
+
+            const summary = invoices.reduce<Record<string, number>>((acc, invoice) => {
+                const status = invoice.invoiceStatus || 'UNKNOWN';
+                acc[status] = (acc[status] || 0) + invoice.invoiceCost;
+                return acc;
+            }, {});
+
+            const chartData = Object.entries(summary).map(([status, totalAmount]) => ({
+                status,
+                totalAmount,
+            }));
+
+            setData(chartData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setError('Failed to load data. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetchInvoices(filters);
-                setData(response);
-            } catch (error) {
-                console.error('Failed to fetch invoices:', error);
-            }
-        };
-
         fetchData();
-    }, [filters]);
+    }, []);
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Typography color="error">{error}</Typography>
+            </Box>
+        );
+    }
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <InvoiceFilter onFilterChange={setFilters} />
-            <div className="charts">
-                <InvoiceStatusChart data={invoicesData.statusData} />
-                <MonthlyInvoiceChart data={invoicesData.monthlyData} />
-                <OverdueTrendChart data={invoicesData.overdueData} />
-                <CustomerAnalysisChart data={invoicesData.customerData} />
-            </div>
-        </div>
+        <Box>
+            <Typography variant="h4" align="center" gutterBottom>
+                Invoice Status Summary
+            </Typography>
+            <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <XAxis dataKey="status" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="totalAmount" fill="#8884d8" />
+                </BarChart>
+            </ResponsiveContainer>
+        </Box>
     );
 };
 

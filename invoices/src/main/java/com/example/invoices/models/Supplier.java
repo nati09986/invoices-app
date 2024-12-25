@@ -1,4 +1,4 @@
-package com.example.invoices.models.entities;
+package com.example.invoices.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

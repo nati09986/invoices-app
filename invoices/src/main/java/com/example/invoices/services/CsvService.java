@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -32,6 +33,7 @@ public class CsvService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public void uploadCSV(MultipartFile file) throws IOException {
+        logger.error("Started upload CSV");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim().parse(reader);
 
@@ -39,6 +41,7 @@ public class CsvService {
                 processRecord(record);
             }
         }
+        logger.error("Finished upload CSV");
     }
 
     private void processRecord(CSVRecord record) {

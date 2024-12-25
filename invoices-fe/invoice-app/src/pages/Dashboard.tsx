@@ -1,32 +1,17 @@
 import React, { useState, useEffect, JSX } from 'react';
-import { Box, Typography, CircularProgress, MenuItem, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Box, Typography, CircularProgress, MenuItem, TextField, ToggleButton, ToggleButtonGroup, Button } from '@mui/material';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
 import ApiService from '../services/ApiService';
 import { Invoice } from '../types/invoice';
-
-interface DateRange {
-    startDate: string;
-    endDate: string;
-}
-
-interface ChartType {
-    totalInvoices: 'bar' | 'pie';
-    overdueTrend: 'line' | 'area';
-    monthlyTotals: 'bar';
-    customerAnalysis: 'bar';
-}
+import { DateRange } from '../types/dateRange';
+import { ChartType } from '../types/chartType';
 
 const Dashboard: React.FC = () => {
     const apiService: ApiService = new ApiService('http://localhost:8080/api');
-
     const [data, setData] = useState<Invoice[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const [dateRange, setDateRange] = useState<DateRange>({ startDate: '2024-09-01', endDate: '2024-12-31' });
-    const [status, setStatus] = useState<string>('ALL');
-    const [customer, setCustomer] = useState<string>('ALL');
-
+    const [dateRange, setDateRange] = useState<DateRange>({ startDate: '2024-09-01', endDate: new Date().toISOString().split('T')[0] });
+    const [status, setStatus] = useState<string>('');
+    const [customer, setCustomer] = useState<string>('');
     const [chartType, setChartType] = useState<ChartType>({ totalInvoices: 'bar', overdueTrend: 'line', monthlyTotals: 'bar', customerAnalysis: 'bar' });
 
     useEffect(() => {
@@ -34,20 +19,16 @@ const Dashboard: React.FC = () => {
     }, [dateRange, status, customer]);
 
     const fetchData = async (): Promise<void> => {
-        setLoading(true);
-        setError(null);
         try {
             const invoices: Invoice[] = await apiService.fetchInvoices(
-                dateRange.startDate ? undefined : dateRange.startDate,
-                dateRange.endDate ? undefined : dateRange.endDate,
-                customer === 'ALL' ? undefined : customer,
-                status === 'ALL' ? undefined : status
+                dateRange.startDate.trim().length === 0 ? undefined : dateRange.startDate,
+                dateRange.endDate.trim().length === 0 ? undefined : dateRange.endDate,
+                customer.trim().length === 0 ? undefined : customer,
+                status.trim().length === 0 ? undefined : status
             );
             setData(invoices);
         } catch (err) {
-            setError('Failed to fetch data.');
-        } finally {
-            setLoading(false);
+            console.warn('Failed to fetch data.');
         }
     };
 
@@ -75,7 +56,7 @@ const Dashboard: React.FC = () => {
             </BarChart>
         ) : (
             <PieChart>
-                <Pie data={chartData} dataKey="total" nameKey="status" cx="50%" cy="50%" outerRadius={150}>
+                <Pie data={chartData} dataKey="total" nameKey="status" cx="50%" cy="50%" outerRadius={120} label={(entry) => `${entry.status}: ${entry.total}`}>
                     {chartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658'][index % 3]} />
                     ))}
@@ -135,10 +116,11 @@ const Dashboard: React.FC = () => {
                 select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
+                style={{ width: '15vw' }}
             >
-                <MenuItem value="ALL">All</MenuItem>
-                <MenuItem value="CONFIRMED">Confirmed</MenuItem>
-                <MenuItem value="PENDING">Pending</MenuItem>
+                <MenuItem value=''>Clear</MenuItem>
+                <MenuItem value='CONFIRMED'>Confirmed</MenuItem>
+                <MenuItem value='CANCELLED'>Cancelled</MenuItem>
             </TextField>
             <TextField
                 label="Customer"
@@ -148,16 +130,13 @@ const Dashboard: React.FC = () => {
         </Box>
     );
 
-    if (loading) return <CircularProgress />;
-    if (error) return <Typography color="error">{error}</Typography>;
-
     return (
         <Box>
             <Typography variant="h4" gutterBottom>
                 Invoice Dashboard
             </Typography>
             {renderFilters()}
-            <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={4}>
+            <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(400px, 1fr))" gap={5} margin={"0 20px"}>
                 <Box>
                     <Typography variant="h6">Total Invoice Amounts by Status</Typography>
                     <ToggleButtonGroup
@@ -192,3 +171,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
